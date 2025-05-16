@@ -1,0 +1,24 @@
+{
+  "originHash" : "c6c90bfc00d2d154edc22ad6c1370d376b1d45cfce094d0c719b5d648a8ef546",
+  "pins" : [
+    {
+      "identity" : "rangeslider",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/warchimede/RangeSlider",
+      "state" : {
+        "revision" : "04ddecea8b0b4d267420c72aa8f5005844d841e6",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "swiftuiflow",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ciaranrobrien/SwiftUIFlow",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b300d3c0110116f3520066dfb8dcf3006cf593c3"
+      }
+    }
+  ],
+  "version" : 3
+}

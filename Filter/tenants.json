@@ -1,0 +1,79 @@
+[
+  {
+    "id": "t1",
+    "name": "Ahza Snack and Beverage",
+    "category": "Beverages, fresh juices, and Indomie",
+    "phone": "Contact not available",
+    "desc": "Refreshing drinks, instant noodles, sweet treats, fresh juices, and light bites—perfect for any time, any craving."
+  },
+  {
+    "id": "t2",
+    "name": "Bakso Bakwan Malang Josss",
+    "category": "Meatballs, soup, and dumplings",
+    "phone": "087818181297",
+    "desc": "Hearty Indonesian favorites: various meatballs, grilled fish, spicy soups, crunchy sides, fried snacks, and fluffy white rice to complete."
+  },
+  {
+    "id": "t3",
+    "name": "Kantin Kasturi",
+    "category": "Homemade food, chicken, fish and more",
+    "phone": "081380770081",
+    "desc": "Home-style mains and sides: flavorful chicken, beef, and seafood dishes, veggie stir-fries, eggs, fritters, sambal, and warm rice."
+  },
+  {
+    "id": "t5",
+    "name": "Kedai Laris Manis",
+    "category": "Rice bowl, nasi hainam and snacks",
+    "phone": "08126001285",
+    "desc": "Savory comfort picks: saucy chicken combos, spicy squid, Hainan rice, warm zuppa soup, fried meatballs, and sweet choux pastry."
+  },
+  {
+    "id": "t6",
+    "name": "Kedai Soto Pak Gembul",
+    "category": "Soto, pecel, and another side dish",
+    "phone": "Contact not available",
+    "desc": "Simple, satisfying plates: fried chicken, pecel, soto, warm rice, dimsum bites, and classic tempeh and tofu sides."
+  },
+  {
+    "id": "t7",
+    "name": "La Ding",
+    "category": "Sop iga, soto mie, siomay and more",
+    "phone": "081808521416",
+    "desc": "Warm and filling choices: rich beef soups, soto mie, complete siomay sets or singles, and fluffy rice in full or half."
+  },
+  {
+    "id": "t8",
+    "name": "Mie Ayam Kriuk",
+    "category": "Chicken noodles, ketoprak and more",
+    "phone": "082116508399",
+    "desc": "Specializing in flavorful mie ayam varieties—rica, yamin, bakso, pangsit—plus classic street food like gado-gado, ketoprak, and risol."
+  },
+  {
+    "id": "t9",
+    "name": "Mustafa Minang",
+    "category": "Minang-style dishes",
+    "phone": "085945553570",
+    "desc": "Minang-style favorites: gulai ayam, kikil, rendang, Padang fried chicken, telur dadar, complete rice packages, iced tea, and water."
+  },
+  {
+    "id": "t10",
+    "name": "Wong Jowo",
+    "category": "Homemade Javanese food and more",
+    "phone": "0881994405",
+    "desc": "Flavor-packed Javanese meals: fried chicken, rica, kecap, squid, kikil gulai, mie goreng, balado, porridge, and rice."
+  },
+  {
+    "id": "t11",
+    "name": "Kedai 2 Nyonya",
+    "category": "Nasi rames, pecel, gorengan and more",
+    "phone": "Contact not available",
+    "desc": "Traditional rice dishes like Bogana, Krawu, Rames, Pecel, and Tempong served with flavorful sides and assorted crispy gorengan."
+  },
+  {
+    "id": "t12",
+    "name": "Mama Djempol",
+    "category": "Homemade food, chicken, fish and more",
+    "phone": "082258937032",
+    "desc": "Home-style Indonesian dishes: chicken, dory, sautéed veggies, gulai, fried sides, potatoes, eggplant, and crispy kerupuk for balance."
+  }
+]
