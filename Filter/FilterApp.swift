@@ -13,6 +13,10 @@ struct FilterApp: App {
     
     @StateObject private var router = AppRouter()
     
+    init() {
+        UIView.appearance().overrideUserInterfaceStyle = .light
+    }
+    
     var body: some Scene {
         WindowGroup {
             RootView()
