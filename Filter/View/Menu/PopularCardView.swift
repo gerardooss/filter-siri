@@ -38,6 +38,7 @@ struct PopularCardView: View {
                         Text(menu.name)
                             .font(.system(size: 17, weight: .bold))
                             .foregroundColor(.white)
+                            .multilineTextAlignment(.leading)
                     }
                     
                     chips([menu.ingredient, menu.taste])
