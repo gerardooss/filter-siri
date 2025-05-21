@@ -9,11 +9,9 @@ import SwiftUI
 import SwiftData
 
 struct FavoriteView: View {
-    @Query(filter: #Predicate<Menu> { $0.isFavorite == true }) private var favoriteMenus: [Menu]
-    
-    var groupedFavorites: [Tenant: [Menu]] {
-        Dictionary(grouping: favoriteMenus) { $0.tenant! }
-    }
+    @StateObject private var viewModel = FavoriteViewModel()
+    @Query(filter: #Predicate<Menu> { $0.isFavorite == true })
+    private var favoriteMenusFromLocal: [Menu]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -31,8 +29,8 @@ struct FavoriteView: View {
                 .padding(.top, 6)
             
             ScrollView{
-                ForEach(groupedFavorites.keys.sorted(by: { $0.name < $1.name }), id: \.id) { tenant in
-                    if let menus = groupedFavorites[tenant]{
+                ForEach(viewModel.groupedFavoriteMenus.keys.sorted(by: { $0.name < $1.name }), id: \.id) { tenant in
+                    if let menus = viewModel.groupedFavoriteMenus[tenant], !menus.isEmpty {
                         VStack(alignment: .leading, spacing: 0) {
                             Text(tenant.name)
                                 .font(.system(size: 17, weight: .bold))
@@ -50,6 +48,12 @@ struct FavoriteView: View {
                 .frame(width: 100, height: 100)
         }
         .background(Color.theme)
+        .onAppear {
+            viewModel.updateFavoriteMenus(favoriteMenusFromLocal)
+        }
+        .onChange(of: favoriteMenusFromLocal) { oldData, newData in
+            viewModel.updateFavoriteMenus(newData)
+        }
     }
     
     private func menuHorizontalScroll(menus: [Menu]) -> some View {
