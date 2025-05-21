@@ -15,62 +15,9 @@ struct HomeView: View {
     @Query private var menusFromLocal: [Menu]
     @Query private var tenantsFromLocal: [Tenant]
     
-    @FocusState private var isSearchFieldFocused: Bool
-    @State private var searchText = ""
-    @State private var isNavigating = false
-    @State private var tempSearch = ""
-    @State var isModalOpen: Bool = false
-    
-    // Filter variables
-    @State private var selectedCategories: Set<String> = []
-    @State private var selectedTenants: Set<String> = []
-    @State private var selectedIngredients: Set<String> = []
-    @State private var selectedTastes: Set<String> = []
-    @State private var minPrice: Double = 0
-    @State private var maxPrice: Double = 50000
-    var selectedPriceRange: ClosedRange<Double> {
-        minPrice...maxPrice
-    }
-    var isFilterActive: Bool {
-        !selectedCategories.isEmpty ||
-        !selectedTenants.isEmpty ||
-        !selectedTastes.isEmpty ||
-        !selectedIngredients.isEmpty ||
-        minPrice != 0 ||
-        maxPrice != 50000
-    }
+    @StateObject private var viewModel = HomeViewModel()
     
     var columns: [GridItem] = [GridItem(.flexible())]
-    
-    // Filtered food
-    var foodFilteredView: [Menu] {
-        menusFromLocal
-            .filter { menu in
-                let matchesSearch = searchText.isEmpty || menu.name.lowercased().contains(searchText.lowercased())
-                let matchesCategory = selectedCategories.isEmpty || selectedCategories.contains(menu.category)
-                let matchesTenant = selectedTenants.isEmpty || selectedTenants.contains(menu.tenant?.id ?? "")
-                let matchesIngredient = selectedIngredients.isEmpty || selectedIngredients.contains(menu.ingredient)
-                let matchesTaste = selectedTastes.isEmpty || selectedTastes.contains(menu.taste)
-                let matchesPrice = Double(menu.price) >= minPrice && Double(menu.price) <= maxPrice
-                
-                return matchesSearch && matchesCategory && matchesTenant && matchesIngredient && matchesTaste && matchesPrice
-            }
-    }
-    
-    var popularMenus: [Menu] {
-        foodFilteredView
-            .sorted { $0.popularity > $1.popularity }
-            .prefix(5)
-            .map { $0 }
-    }
-    
-    var menusPerTenant: [Tenant: [Menu]] {
-        let grouped = Dictionary(grouping: foodFilteredView) { $0.tenant! }
-        
-        return grouped.mapValues { menus in
-            Array(menus.prefix(3))
-        }
-    }
     
     var body: some View {
         NavigationStack {
@@ -80,21 +27,24 @@ struct HomeView: View {
                 
                 // Main content
                 ScrollView {
-                    if isSearchFieldFocused {
-                        HStack {
-                            Text("Start typing to search...")
-                                .foregroundColor(.gray)
-                                .italic()
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                    } else {
-                        popularMenuContent()
-                        menuPerTenantContent(menusPerTenant: menusPerTenant)
-                    }
+                    
+                    popularMenuContent()
+                    menuPerTenantContent(menusPerTenant: viewModel.menusPerTenant)
                 }
             }
             .background(Color.theme)
+            .onAppear {
+                viewModel.updateDataSource(menus: menusFromLocal, tenants: tenantsFromLocal)
+            }
+            .onAppear {
+                viewModel.updateDataSource(menus: menusFromLocal, tenants: tenantsFromLocal)
+            }
+            .onChange(of: menusFromLocal) { oldMenus, newMenus in
+                viewModel.updateDataSource(menus: newMenus, tenants: tenantsFromLocal)
+            }
+            .onChange(of: tenantsFromLocal) { oldTenants, newTenants in
+                viewModel.updateDataSource(menus: menusFromLocal, tenants: newTenants)
+            }
         }
     }
     
@@ -104,7 +54,7 @@ struct HomeView: View {
         HStack {
             ZStack(alignment: .trailing) {
                 TextField("",
-                          text: $searchText,
+                          text: $viewModel.searchText,
                           prompt: Text("Search").foregroundColor(.darkGreen))
                 .textFieldStyle(.plain)
                 .padding(.horizontal, 12)
@@ -117,20 +67,20 @@ struct HomeView: View {
                         .stroke(Color.sageGreen, lineWidth: 1)
                 )
                 
-                if(searchText == "") {
+                if(viewModel.searchText.isEmpty) {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color.darkGreen)
                     .padding(.trailing, 8)}
             }
             
             Button(action: {
-                self.isModalOpen = true
+                viewModel.isFilterModalOpen = true
             }) {
                 Image(systemName: "slider.horizontal.3")
                     .foregroundColor(Color.sageGreen)
             }
             .font(.title2)
-            .sheet(isPresented: $isModalOpen) { filterModal() }
+            .sheet(isPresented: $viewModel.isFilterModalOpen) { filterModal() }
         }
         .padding(.horizontal)
         .padding(.vertical, 4)
@@ -155,7 +105,7 @@ struct HomeView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    ForEach(popularMenus) { menu in
+                    ForEach(viewModel.popularMenus) { menu in
                         NavigationLink(
                             destination: DetailView(menuId: menu.id),
                             label: { PopularCardView(menu: menu) }
@@ -232,28 +182,28 @@ struct HomeView: View {
                                     "Kedai Laris Manis"],
                         translateId: true,
                         tenants: tenantsFromLocal,
-                        selectedItems: $selectedTenants,
+                        selectedItems: $viewModel.selectedTenants,
                     )
                     
                     FilterButton(
                         segmentTitle: "Category",
                         itemTitle: ["Main dish", "Side dish", "Snack", "Dessert", "Drink", "Other"],
                         tenants: tenantsFromLocal,
-                        selectedItems: $selectedCategories
+                        selectedItems: $viewModel.selectedCategories
                     )
                     
                     FilterButton(
                         segmentTitle: "Main Ingredients",
                         itemTitle: ["Chicken", "Beef", "Fish", "Shrimp", "Egg", "Rice", "Noodles", "Veggies", "Other"],
                         tenants: tenantsFromLocal,
-                        selectedItems: $selectedIngredients
+                        selectedItems: $viewModel.selectedIngredients
                     )
                     
                     FilterButton(
                         segmentTitle: "Taste",
                         itemTitle: ["Sweet", "Savoury", "Spicy", "Other"],
                         tenants: tenantsFromLocal,
-                        selectedItems: $selectedTastes
+                        selectedItems: $viewModel.selectedTastes
                     )
                     
                     VStack(alignment: .leading) {
@@ -262,16 +212,16 @@ struct HomeView: View {
                             .padding(.top, 6)
                         
                         HStack {
-                            Text("Rp\(currencyFormat(minPrice))")
+                            Text("Rp\(currencyFormat(viewModel.minPrice))")
                             Spacer()
-                            Text("Rp\(currencyFormat(maxPrice))")
+                            Text("Rp\(currencyFormat(viewModel.maxPrice))")
                         }
                         .font(.subheadline)
                         .foregroundColor(Color.gray)
                         
                         RangeSliderView(
-                            lowerValue: $minPrice,
-                            upperValue: $maxPrice,
+                            lowerValue: $viewModel.minPrice,
+                            upperValue: $viewModel.maxPrice,
                             minimumValue: 0,
                             maximumValue: 50_000
                         )
@@ -285,8 +235,8 @@ struct HomeView: View {
                 ZStack(alignment: .bottom) {
                     Color.clear.frame(height: 80)
                     
-                    if (isFilterActive) {
-                        Text("Show \(foodFilteredView.count) results")
+                    if (viewModel.isFilterActive) {
+                        Text("Show \(viewModel.foodFilteredView.count) results")
                             .foregroundColor(.gray)
                             .italic()
                             .padding(.horizontal)
@@ -296,12 +246,7 @@ struct HomeView: View {
                 
                 HStack(spacing: 12) {
                     Button(action: {
-                        selectedCategories.removeAll()
-                        selectedTenants.removeAll()
-                        selectedIngredients.removeAll()
-                        selectedTastes.removeAll()
-                        minPrice = 0
-                        maxPrice = 50000
+                        viewModel.resetFilters()
                     }) {
                         Text("Reset")
                             .frame(maxWidth: .infinity)
@@ -317,13 +262,13 @@ struct HomeView: View {
                     
                     
                     Button(action: {
-                        isModalOpen = false
+                        viewModel.applyFilters()
                     }) {
                         Text("Done")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .foregroundColor(isFilterActive ? .white : Color.dkGray)
-                            .background(isFilterActive ? Color.sageGreen : Color.chipGray)
+                            .foregroundColor(viewModel.isFilterActive ? .white : Color.dkGray)
+                            .background(viewModel.isFilterActive ? Color.sageGreen : Color.chipGray)
                             .cornerRadius(8)
                     }
                 }
